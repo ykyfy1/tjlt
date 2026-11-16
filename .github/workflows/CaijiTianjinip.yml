@@ -47,6 +47,17 @@ jobs:
           echo "====调试2：统计文件行数===="
           wc -l ip/Tianjin_liantong_ip_config.txt
 
+      # ========== 生成频道模板文件到 template/ 目录【新增】==========
+      - name: 临时生成天津频道模板(Secret保存，不进仓库)
+        env:
+          TJLT_TPL_CONTENT: ${{ secrets.TJLT_TPL_CONFIG }}
+        run: |
+          mkdir -p template
+          printf "%s" "$TJLT_TPL_CONTENT" > template/template_Tianjin_liantong.txt
+          echo "====检查模板文件===="
+          ls -la template/
+          wc -l template/template_Tianjin_liantong.txt
+
       # ==========【清理ip目录旧good_*文件，防止残留干扰测速】==========
       - name: 清理ip目录历史good_*旧文件
         run: |
@@ -117,7 +128,7 @@ jobs:
             echo "✅ 全局合并完成，zubo.txt生成成功"
           else
             echo "⚠️ 警告：新zubo.txt不存在或者是空！尝试恢复旧备份文件"
-            if [ -f "zubo_bf.txt" ] && [ -s "zubo_bf.txt" ]; then
+            if [ -f "zubo_bf.txt" ] && [ -s "$zubo_bf.txt" ]; then
               cp zubo_bf.txt zubo.txt
               echo "✅ 已恢复备份文件"
             else
